@@ -97,6 +97,12 @@ class _RecordatorioState extends State<Recordatorio> {
               width: double.infinity,
               padding: const EdgeInsets.all(15),
               decoration: BoxDecoration(
+                boxShadow: [
+                  BoxShadow(
+              color: Colors.grey.withOpacity(0.3),
+              spreadRadius: 2,
+              blurRadius: 50,
+              offset: const Offset(0, 5))],
                 color: Colors.white,
                 borderRadius: BorderRadius.circular(20),
               ),

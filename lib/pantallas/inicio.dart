@@ -1,4 +1,5 @@
 import 'package:essentials_app/util/notas.dart';
+import 'package:essentials_app/util/perfil.dart';
 import 'package:essentials_app/util/recordatorio.dart';
 import 'package:flutter/material.dart';
 
@@ -40,7 +41,10 @@ class Inicio extends StatelessWidget {
         actions: [
           GestureDetector(
             onTap: () {
-              // Acción al tocar la manzana (si es necesario)
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const PantallaPerfil()),
+              );
             },
           child: Container(
           margin: EdgeInsets.all(10),
