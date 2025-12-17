@@ -1,7 +1,8 @@
+import 'package:essentials_app/pantallas/inicio.dart';
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../main.dart'; // Para acceder a la variable 'supabase'
-import 'navbar.dart';  // Para ir al menú principal
+
 
 class PantallaLogin extends StatefulWidget {
   const PantallaLogin({super.key});
@@ -39,7 +40,7 @@ class _PantallaLoginState extends State<PantallaLogin> {
         // Si todo sale bien, vamos a la pantalla principal y borramos el login del historial
         Navigator.pushReplacement(
           context, 
-          MaterialPageRoute(builder: (_) => const PantallaNavegacion())
+          MaterialPageRoute(builder: (_) => const Inicio())
         );
       }
     } on AuthException catch (error) {
