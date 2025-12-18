@@ -1,3 +1,4 @@
+import 'package:essentials_app/util/estados.dart';
 import 'package:essentials_app/util/notas.dart';
 import 'package:essentials_app/util/perfil.dart';
 import 'package:essentials_app/util/recordatorio.dart';
@@ -28,13 +29,13 @@ class Inicio extends StatelessWidget {
           margin: EdgeInsets.all(10),
           alignment: Alignment.center,
           width: 40,
-          child: Image.asset('assets/images/frutilla.png',
-            height: 150,
-            width: 150),
           decoration: BoxDecoration(
             color: Color(0xffffeac9),
             borderRadius: BorderRadius.circular(10),
           ),
+          child: Image.asset('assets/images/frutilla.png',
+            height: 150,
+            width: 150),
         ),
 
         // MANZANA
@@ -49,22 +50,27 @@ class Inicio extends StatelessWidget {
           child: Container(
           margin: EdgeInsets.all(10),
           alignment: Alignment.center,
-          child: Image.asset('assets/images/manzana-icon.png',
-            height: 40,
-            width: 40),
           decoration: BoxDecoration(
             color: Color.fromARGB(255, 255, 255, 255),
             shape: BoxShape.circle,
             border: Border.all(color: Color(0xffFD7979), width: 2)
           ),
+          child: Image.asset('assets/images/manzana-icon.png',
+            height: 40,
+            width: 40),
         )
       )
         ],
       ),
       body: ListView(
         children: [
+          SizedBox(height: 10),
           Recordatorio(),
-          Notas()
+          SizedBox(height: 10),
+          Notas(),
+          SizedBox(height: 30),
+          Estados(),
+          SizedBox(height: 30)
         ],
       ),
     );
