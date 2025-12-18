@@ -2,6 +2,7 @@ import 'package:essentials_app/util/estados.dart';
 import 'package:essentials_app/util/notas.dart';
 import 'package:essentials_app/util/perfil.dart';
 import 'package:essentials_app/util/recordatorio.dart';
+import 'package:essentials_app/util/servicios.dart';
 import 'package:flutter/material.dart';
 
 
@@ -70,7 +71,8 @@ class Inicio extends StatelessWidget {
           Notas(),
           SizedBox(height: 30),
           Estados(),
-          SizedBox(height: 30)
+          SizedBox(height: 50),
+          Servicios()
         ],
       ),
     );
