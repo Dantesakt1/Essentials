@@ -1,3 +1,4 @@
+import 'package:essentials_app/pantallas/calendario.dart';
 import 'package:essentials_app/util/ajustes_chat.dart';
 import 'package:flutter/material.dart';
 import 'package:essentials_app/util/estados.dart';
@@ -81,10 +82,10 @@ class _InicioState extends State<Inicio> {
           Servicios()
         ],
       ),
-      // PÁGINA 1: CHAT
+
       const ChatPage(),
-      // PÁGINA 2: CALENDARIO
-      const Center(child: Text("Calendario 📅")),
+
+      const CalendarioPage(),
     ];
 
     return Scaffold(
