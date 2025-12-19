@@ -1,3 +1,4 @@
+import 'package:essentials_app/util/wishlist.dart';
 import 'package:flutter/material.dart';
 
 class Servicios extends StatelessWidget {
@@ -13,7 +14,11 @@ class Servicios extends StatelessWidget {
           _tarjetaServicio(
             imagen: 'assets/images/wishlist.png',
             onTap: () {
-              print("Navegar a Caja de Deseos"); // Aquí conectaremos la pantalla después
+              // --- NAVEGACIÓN AQUÍ ---
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const WishlistPage()),
+              );
             },
           ),
 

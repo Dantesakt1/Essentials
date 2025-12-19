@@ -151,9 +151,9 @@ class _EstadosState extends State<Estados> {
           borderRadius: BorderRadius.circular(30),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.1), // <--- Aumenta esto (ej: 0.2) para que sea más oscura
-              blurRadius: 20, // <--- Qué tan "difuminada" se ve
-              offset: const Offset(0, 10), // <--- Qué tan abajo cae la sombra
+              color: Colors.black.withOpacity(0.1), 
+              blurRadius: 20, 
+              offset: const Offset(0, 10), 
             )
           ],
         ),
@@ -174,10 +174,8 @@ class _EstadosState extends State<Estados> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween, 
               children: [
-                // 1. Mi Círculo
-                _circuloEstadoGrande(estadoAMostrar),
                 
-                // 2. Lista de Gatitos
+                // 1. Lista de Gatitos (AHORA A LA IZQUIERDA)
                 Column(
                   children: [
                      _botonGatoPequeno('lokotron'),
@@ -187,9 +185,12 @@ class _EstadosState extends State<Estados> {
                   ],
                 ),
 
-                // 3. Nombre + Botón Enviar (MÁS ANCHO AHORA)
+                // 2. Mi Círculo (AHORA AL MEDIO)
+                _circuloEstadoGrande(estadoAMostrar),
+
+                // 3. Nombre + Botón Enviar (SE QUEDA A LA DERECHA)
                 SizedBox(
-                  width: 100, // <--- Aumentado de 80 a 100 para que quepa el texto
+                  width: 100, 
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
@@ -197,11 +198,11 @@ class _EstadosState extends State<Estados> {
                         emocionSeleccionada?.toUpperCase() ?? "...", 
                         style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: Color(0xFF5A3E3E)),
                         textAlign: TextAlign.center,
-                        maxLines: 2, // Por si el texto es muy largo
+                        maxLines: 2, 
                         overflow: TextOverflow.ellipsis,
                       ),
                       
-                      const SizedBox(height: 15), // <--- Más espacio vertical
+                      const SizedBox(height: 15),
 
                       if (emocionSeleccionada != null)
                         GestureDetector(
@@ -254,7 +255,7 @@ class _EstadosState extends State<Estados> {
                        estadoPareja?['mood_value']?.toString().toUpperCase() ?? "...",
                        style: const TextStyle(
                          fontWeight: FontWeight.bold, 
-                         fontSize: 18, // Más grande
+                         fontSize: 18, 
                          color: Color(0xFF5A3E3E)
                         ),
                      )
