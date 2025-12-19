@@ -1,10 +1,13 @@
+import 'package:essentials_app/util/ajustes_chat.dart';
 import 'package:flutter/material.dart';
 import 'package:essentials_app/util/estados.dart';
 import 'package:essentials_app/util/notas.dart';
 import 'package:essentials_app/util/perfil.dart';
 import 'package:essentials_app/util/recordatorio.dart';
 import 'package:essentials_app/util/servicios.dart';
-import 'package:essentials_app/util/barrita.dart'; // <--- IMPORTAMOS LA BARRITA
+import 'package:essentials_app/util/barrita.dart';
+import 'package:essentials_app/pantallas/chat.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 class Inicio extends StatefulWidget {
   const Inicio({super.key});
@@ -14,16 +17,59 @@ class Inicio extends StatefulWidget {
 }
 
 class _InicioState extends State<Inicio> {
-  int _indiceActual = 0; // Controla qué pestaña estamos viendo
+  int _indiceActual = 0; 
+  String _nombrePareja = "Cargando..."; // Texto temporal mientras carga
+
+  @override
+  void initState() {
+    super.initState();
+    _obtenerNombrePareja();
+  }
+
+  // Función limpia para obtener el nombre
+  Future<void> _obtenerNombrePareja() async {
+    try {
+      final myId = Supabase.instance.client.auth.currentUser?.id;
+      if (myId == null) return;
+
+      // 1. Buscamos mi perfil
+      final miPerfil = await Supabase.instance.client
+          .from('profiles')
+          .select('partner_id')
+          .eq('id', myId)
+          .single();
+
+      final partnerId = miPerfil['partner_id'];
+
+      if (partnerId != null) {
+        // 2. Buscamos perfil de la pareja
+        final perfilPareja = await Supabase.instance.client
+            .from('profiles')
+            .select('nickname, username')
+            .eq('id', partnerId)
+            .single();
+
+        if (mounted) {
+          setState(() {
+            _nombrePareja = perfilPareja['nickname'] ?? perfilPareja['username'] ?? "Mi Pareja";
+          });
+        }
+      } else {
+         if (mounted) setState(() => _nombrePareja = "Sin Pareja");
+      }
+    } catch (e) {
+      // Si falla, dejamos un nombre por defecto para no romper la UI
+      if (mounted) setState(() => _nombrePareja = "Mi Amor");
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     
-    // 1. DEFINIMOS LAS 3 PANTALLAS AQUÍ DENTRO
     final List<Widget> paginas = [
-      // PÁGINA 0: TU INICIO ORIGINAL (LISTVIEW)
+      // PÁGINA 0: INICIO
       ListView(
-        padding: const EdgeInsets.only(bottom: 100), // Espacio para que la barra no tape lo último
+        padding: const EdgeInsets.only(bottom: 100),
         children: const [
           SizedBox(height: 10),
           Recordatorio(),
@@ -35,75 +81,22 @@ class _InicioState extends State<Inicio> {
           Servicios()
         ],
       ),
-
-      // PÁGINA 1: COSAS DE PAREJA (Placeholder)
-      const Center(child: Text("Sección de Pareja ❤️")),
-
-      // PÁGINA 2: CALENDARIO (Placeholder)
+      // PÁGINA 1: CHAT
+      const ChatPage(),
+      // PÁGINA 2: CALENDARIO
       const Center(child: Text("Calendario 📅")),
     ];
 
     return Scaffold(
-      backgroundColor: const Color(0xFFFFFBF4), // Tu color crema de fondo
+      backgroundColor: const Color(0xFFFFFBF4),
       
-      // ================= TU APPBAR INTACTO =================
-      appBar: AppBar(
-        backgroundColor: const Color(0xFFFEEAC9),
-        elevation: 0,
-        scrolledUnderElevation: 0,
-        surfaceTintColor: Colors.transparent,
-        toolbarHeight: 80,
-        centerTitle: true,
-        shape: const RoundedRectangleBorder(
-          borderRadius: BorderRadius.only(
-            bottomLeft: Radius.circular(20),
-            bottomRight: Radius.circular(20),
-          ),
-        ),
-        // FRUTILLA
-        leadingWidth: 80,
-        leading: Container(
-          margin: const EdgeInsets.all(10),
-          alignment: Alignment.center,
-          width: 40,
-          decoration: BoxDecoration(
-            color: const Color(0xffffeac9),
-            borderRadius: BorderRadius.circular(10),
-          ),
-          child: Image.asset('assets/images/frutilla.png',
-            height: 150,
-            width: 150),
-        ),
-        // MANZANA
-        actions: [
-          GestureDetector(
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => const PantallaPerfil()),
-              );
-            },
-            child: Container(
-              margin: const EdgeInsets.all(10),
-              alignment: Alignment.center,
-              decoration: BoxDecoration(
-                color: const Color.fromARGB(255, 255, 255, 255),
-                shape: BoxShape.circle,
-                border: Border.all(color: const Color(0xffFD7979), width: 2)
-              ),
-              child: Image.asset('assets/images/manzana-icon.png',
-                height: 40,
-                width: 40),
-            ),
-          )
-        ],
-      ),
-      // =====================================================
+      // Barra condicional: Chat vs Normal
+      appBar: _indiceActual == 1 
+          ? _barraChat() 
+          : _barraNormal(), 
 
-      // 2. EL CUERPO CAMBIA SEGÚN EL ÍNDICE
       body: paginas[_indiceActual],
 
-      // 3. LA BARRITA ABAJO
       bottomNavigationBar: BarritaNavegacion(
         indiceActual: _indiceActual,
         onCambiarTab: (index) {
@@ -112,6 +105,118 @@ class _InicioState extends State<Inicio> {
           });
         },
       ),
+    );
+  }
+
+  // --- BARRA NORMAL (FRUTILLA) ---
+  PreferredSizeWidget _barraNormal() {
+    return AppBar(
+      backgroundColor: const Color(0xFFFEEAC9),
+      elevation: 0,
+      scrolledUnderElevation: 0,
+      surfaceTintColor: Colors.transparent,
+      toolbarHeight: 80,
+      centerTitle: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.only(
+          bottomLeft: Radius.circular(20),
+          bottomRight: Radius.circular(20),
+        ),
+      ),
+      leadingWidth: 80,
+      leading: Container(
+        margin: const EdgeInsets.all(10),
+        alignment: Alignment.center,
+        width: 40,
+        decoration: BoxDecoration(
+          color: const Color(0xffffeac9),
+          borderRadius: BorderRadius.circular(10),
+        ),
+        child: Image.asset('assets/images/frutilla.png', height: 150, width: 150),
+      ),
+      actions: [
+        GestureDetector(
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => const PantallaPerfil()),
+            );
+          },
+          child: Container(
+            margin: const EdgeInsets.all(10),
+            alignment: Alignment.center,
+            decoration: BoxDecoration(
+              color: const Color.fromARGB(255, 255, 255, 255),
+              shape: BoxShape.circle,
+              border: Border.all(color: const Color(0xffFD7979), width: 2)
+            ),
+            child: Image.asset('assets/images/manzana-icon.png', height: 40, width: 40),
+          ),
+        )
+      ],
+    );
+  }
+
+  // --- BARRA CHAT (NOMBRE PAREJA) ---
+PreferredSizeWidget _barraChat() {
+    return AppBar(
+      backgroundColor: const Color(0xFFFEEAC9),
+      elevation: 0,
+      scrolledUnderElevation: 0,
+      surfaceTintColor: Colors.transparent,
+      toolbarHeight: 80,
+      centerTitle: true,
+      
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.only(
+          bottomLeft: Radius.circular(20),
+          bottomRight: Radius.circular(20),
+        ),
+      ),
+
+      // 1. Damos espacio al botón
+      leadingWidth: 70, 
+
+      // BOTÓN DE AJUSTES MEJORADO ⚙️
+      leading: GestureDetector(
+        onTap: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => const AjustesChat()),
+          );
+        },
+        child: Container(
+          // 2. Márgenes ajustados para que quede centrado y grande
+          margin: const EdgeInsets.fromLTRB(15, 15, 5, 15),
+          alignment: Alignment.center,
+          decoration: BoxDecoration(
+            color: Colors.white.withOpacity(0.6), // Un poco más visible
+            borderRadius: BorderRadius.circular(15), // Más redondeado
+          ),
+          // 3. Icono un poco más grande y oscuro
+          child: const Icon(Icons.settings_outlined, color: Colors.black87, size: 26),
+        ),
+      ),
+
+      title: Text(
+        _nombrePareja,
+        style: const TextStyle(
+          color: Colors.black,
+          fontWeight: FontWeight.bold,
+          fontSize: 18
+        )
+      ),
+
+      actions: [
+        Padding(
+          padding: const EdgeInsets.only(right: 20.0),
+          child: CircleAvatar(
+            backgroundColor: const Color.fromARGB(255, 245, 245, 245),
+            radius: 22,
+            backgroundImage: const AssetImage('assets/images/gato_1.png'),
+          ),
+        )
+      ],
     );
   }
 }
