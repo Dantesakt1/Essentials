@@ -157,6 +157,7 @@ class _WishlistPageState extends State<WishlistPage> {
             const SizedBox(height: 5),
             const Text("Toca el cuadro para marcar como cumplido", style: TextStyle(color: Colors.grey, fontSize: 12)),
             const SizedBox(height: 15),
+
             Expanded(
               child: _idPareja == null 
                 ? const Center(child: Text("Vincula a tu pareja primero."))
@@ -293,8 +294,14 @@ class _WishlistPageState extends State<WishlistPage> {
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Icon(Icons.stars_rounded, size: 60, color: colorVerde.withOpacity(0.2)),
-                          const SizedBox(height: 10),
+                          Opacity(
+                            opacity: 0.6,
+                            child: Image.asset(
+                              'assets/images/carrito.png', // <--- ASEGÚRATE DE TENER ESTE ARCHIVO
+                              height: 100, 
+                              fit: BoxFit.contain,
+                            ),
+                          ),
                           Text("¡Pide un deseo!", style: TextStyle(color: Colors.grey[400], fontWeight: FontWeight.bold)),
                         ],
                       ),
