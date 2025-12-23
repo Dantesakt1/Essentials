@@ -1,7 +1,10 @@
-import 'dart:io'; // Necesario para manejar archivos
+import 'dart:io';
+import 'package:essentials_app/pantallas/login.dart';
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:image_picker/image_picker.dart'; // El paquete que instalamos
+import 'package:image_picker/image_picker.dart';
+// Asegúrate de importar tu pantalla de login si la tienes en otro archivo
+// import 'package:essentials_app/pantallas/login_page.dart'; 
 
 class PantallaPerfil extends StatefulWidget {
   const PantallaPerfil({super.key});
@@ -14,10 +17,10 @@ class _PantallaPerfilState extends State<PantallaPerfil> {
   final _usuarioController = TextEditingController();
   final _passwordController = TextEditingController();
   bool cargando = true;
-  bool subiendoFoto = false; // Para mostrar cargando en la foto
+  bool subiendoFoto = false;
   
-  String? avatarUrl; // Aquí guardaremos el link de Supabase
-  File? _archivoImagen; // Aquí guardaremos la foto temporal del celular
+  String? avatarUrl;
+  File? _archivoImagen;
 
   final miId = Supabase.instance.client.auth.currentUser?.id;
 
@@ -29,6 +32,7 @@ class _PantallaPerfilState extends State<PantallaPerfil> {
 
   Future<void> _cargarPerfil() async {
     try {
+      if (miId == null) return;
       final data = await Supabase.instance.client
           .from('profiles')
           .select()
@@ -39,7 +43,7 @@ class _PantallaPerfilState extends State<PantallaPerfil> {
         setState(() {
           _usuarioController.text = data['username'] ?? "";
           _passwordController.text = "******"; 
-          avatarUrl = data['avatar_url']; // <--- Cargamos la URL de la foto si existe
+          avatarUrl = data['avatar_url'];
           cargando = false;
         });
       }
@@ -48,34 +52,28 @@ class _PantallaPerfilState extends State<PantallaPerfil> {
     }
   }
 
-  // --- NUEVA FUNCIÓN: CAMBIAR FOTO ---
   Future<void> _cambiarFoto() async {
     final ImagePicker picker = ImagePicker();
-    // 1. Abrir galería
     final XFile? imagen = await picker.pickImage(source: ImageSource.gallery);
     
-    if (imagen == null) return; // Si canceló, no hacemos nada
+    if (imagen == null) return;
 
     setState(() {
-      _archivoImagen = File(imagen.path); // Mostramos la foto localmente
+      _archivoImagen = File(imagen.path);
       subiendoFoto = true;
     });
 
     try {
-      // 2. Crear nombre único para la foto (ej: mi_id_fecha.jpg)
       final nombreArchivo = '/$miId/perfil_${DateTime.now().millisecondsSinceEpoch}.jpg';
 
-      // 3. Subir a Supabase Storage (Bucket 'avatars')
       await Supabase.instance.client.storage
           .from('avatars')
           .upload(nombreArchivo, _archivoImagen!, fileOptions: const FileOptions(upsert: true));
 
-      // 4. Obtener la URL pública para verla
       final urlPublica = Supabase.instance.client.storage
           .from('avatars')
           .getPublicUrl(nombreArchivo);
 
-      // 5. Guardar la URL en la tabla 'profiles'
       await Supabase.instance.client.from('profiles').update({
         'avatar_url': urlPublica,
       }).eq('id', miId!);
@@ -85,18 +83,13 @@ class _PantallaPerfilState extends State<PantallaPerfil> {
           avatarUrl = urlPublica;
           subiendoFoto = false;
         });
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text("Foto actualizada")),
-        );
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Foto actualizada")));
       }
 
     } catch (e) {
-      print("Error subiendo foto: $e");
       if (mounted) {
         setState(() => subiendoFoto = false);
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text("Error al subir la imagen")),
-        );
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Error al subir la imagen")));
       }
     }
   }
@@ -111,14 +104,29 @@ class _PantallaPerfilState extends State<PantallaPerfil> {
       }).eq('id', miId!);
 
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text("Perfil actualizado")),
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Perfil actualizado")));
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Error: $e")));
+    }
+  }
+
+  // --- FUNCIÓN CERRAR SESIÓN ---
+Future<void> _cerrarSesion() async {
+    try {
+      await Supabase.instance.client.auth.signOut();
+      if (mounted) {
+        // CAMBIO AQUÍ: Usamos pushAndRemoveUntil con MaterialPageRoute
+        // Esto navega directamente a la clase LoginPage y borra el historial para no poder volver atrás.
+        Navigator.of(context).pushAndRemoveUntil(
+          MaterialPageRoute(builder: (context) => const PantallaLogin()), 
+          (route) => false
         );
       }
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Error: $e")),
-      );
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Error al cerrar sesión: $e")));
+      }
     }
   }
 
@@ -158,7 +166,7 @@ class _PantallaPerfilState extends State<PantallaPerfil> {
                           child: Container(
                             margin: const EdgeInsets.only(top: 10),
                             width: 50, height: 50,
-                            decoration: BoxDecoration(
+                            decoration: const BoxDecoration(
                               color: Colors.white,
                               shape: BoxShape.circle,
                             ),
@@ -177,9 +185,8 @@ class _PantallaPerfilState extends State<PantallaPerfil> {
               offset: const Offset(0, -60),
               child: Column(
                 children: [
-                  // --- AVATAR CON GESTURE DETECTOR ---
                   GestureDetector(
-                    onTap: subiendoFoto ? null : _cambiarFoto, // <--- CLIC PARA CAMBIAR FOTO
+                    onTap: subiendoFoto ? null : _cambiarFoto,
                     child: Stack(
                       children: [
                         Container(
@@ -188,19 +195,16 @@ class _PantallaPerfilState extends State<PantallaPerfil> {
                             shape: BoxShape.circle,
                             color: Colors.grey[300],
                             border: Border.all(color: Colors.white, width: 5),
-                            // Lógica para mostrar la imagen correcta
                             image: _archivoImagen != null
-                                ? DecorationImage(image: FileImage(_archivoImagen!), fit: BoxFit.cover) // 1. Foto recién seleccionada
+                                ? DecorationImage(image: FileImage(_archivoImagen!), fit: BoxFit.cover)
                                 : avatarUrl != null
-                                    ? DecorationImage(image: NetworkImage(avatarUrl!), fit: BoxFit.cover) // 2. Foto de la BD
-                                    : null, // 3. Sin foto
+                                    ? DecorationImage(image: NetworkImage(avatarUrl!), fit: BoxFit.cover)
+                                    : null,
                           ),
                           child: _archivoImagen == null && avatarUrl == null
-                              ? const Icon(Icons.person, size: 80, color: Colors.white) // Icono por defecto
+                              ? const Icon(Icons.person, size: 80, color: Colors.white)
                               : null,
                         ),
-                        
-                        // Icono de camarita pequeño para indicar que se puede editar
                         Positioned(
                           bottom: 5,
                           right: 5,
@@ -220,14 +224,8 @@ class _PantallaPerfilState extends State<PantallaPerfil> {
                   ),
                   
                   const SizedBox(height: 10),
-                  
-                  const Text(
-                    "tap para cambiar la foto de perfil...",
-                    style: TextStyle(fontSize: 12, color: Colors.grey),
-                  ),
-                  
+                  const Text("tap para cambiar la foto de perfil...", style: TextStyle(fontSize: 12, color: Colors.grey)),
                   const SizedBox(height: 5),
-
                   Text(
                     _usuarioController.text.isEmpty ? "Cargando..." : _usuarioController.text,
                     style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
@@ -272,19 +270,36 @@ class _PantallaPerfilState extends State<PantallaPerfil> {
                         const SizedBox(height: 30),
 
                         Center(
-                          child: SizedBox(
-                            height: 50,
-                            width: 200,
-                            child: ElevatedButton(
-                              onPressed: _guardarCambios,
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: const Color(0xFFA1BC98),
-                                foregroundColor: Colors.white,
-                                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                          child: Column( // Usamos Column para apilar los botones
+                            children: [
+                              // BOTÓN GUARDAR
+                              SizedBox(
+                                height: 50,
+                                width: 200,
+                                child: ElevatedButton(
+                                  onPressed: _guardarCambios,
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: const Color(0xFFA1BC98),
+                                    foregroundColor: Colors.white,
+                                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                                  ),
+                                  child: const Text("Guardar cambios"),
+                                ),
                               ),
-                              child: const Text("Guardar cambios"),
-                            ),
-                          )
+                              
+                              const SizedBox(height: 15), // Espacio entre botones
+
+                              // BOTÓN CERRAR SESIÓN
+                              TextButton.icon( // Usamos TextButton para que sea menos invasivo visualmente, o puedes usar ElevatedButton rojo
+                                onPressed: _cerrarSesion,
+                                icon: const Icon(Icons.logout, size: 20, color: Colors.redAccent),
+                                label: const Text("Cerrar sesión", style: TextStyle(color: Colors.redAccent, fontWeight: FontWeight.bold)),
+                                style: TextButton.styleFrom(
+                                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                                ),
+                              ),
+                            ],
+                          ),
                         )
                       ],
                     ),

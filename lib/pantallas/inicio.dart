@@ -74,9 +74,9 @@ class _InicioState extends State<Inicio> {
         children: const [
           SizedBox(height: 10),
           Recordatorio(),
-          SizedBox(height: 10),
+          SizedBox(height: 50),
           Notas(),
-          SizedBox(height: 30),
+          SizedBox(height: 50),
           Estados(),
           SizedBox(height: 50),
           Servicios()
