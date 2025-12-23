@@ -1,3 +1,4 @@
+import 'package:essentials_app/util/ruleta.dart';
 import 'package:essentials_app/util/wishlist.dart';
 import 'package:flutter/material.dart';
 
@@ -28,7 +29,10 @@ class Servicios extends StatelessWidget {
           _tarjetaServicio(
             imagen: 'assets/images/ruleta.png',
             onTap: () {
-              print("Navegar a Ruleta"); // Aquí conectaremos la pantalla después
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const RuletaPage()),
+              );
             },
           ),
         ],
