@@ -70,7 +70,7 @@ class _RecordatorioState extends State<Recordatorio> {
         width: double.infinity, // Que ocupe todo el ancho disponible
         padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 20),
         decoration: BoxDecoration(
-          color: const Color(0xffF5ECDD), // Tu color beige
+          color: const Color(0xffA1BC98), // Tu color beige
           borderRadius: BorderRadius.circular(50),
           boxShadow: [
             BoxShadow(
@@ -85,7 +85,7 @@ class _RecordatorioState extends State<Recordatorio> {
           children: [
             // 1. IMAGEN DEL GATO/TÍTULO
             Image.asset(
-              'assets/images/recordatorio.png',
+              'assets/images/recordatory-icon.png',
               height: 120, // Ajusta según tu imagen
               fit: BoxFit.contain,
             ),
@@ -131,8 +131,8 @@ class _RecordatorioState extends State<Recordatorio> {
                             Text(
                               eventoMasCercano!['title'] ?? "Evento",
                               style: const TextStyle(
-                                color: Color(0xffFD7979), // Rojo Fresa
-                                fontWeight: FontWeight.w900,
+                                color: Color.fromARGB(255, 99, 99, 99), // Rojo Fresa
+                                fontWeight: FontWeight.w600,
                                 fontSize: 18,
                               ),
                               textAlign: TextAlign.center,

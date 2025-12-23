@@ -15,8 +15,7 @@ class BarritaNavegacion extends StatelessWidget {
     return Container(
       height: 90,
       decoration: BoxDecoration(
-        // Corregí el código de color (tenía un dígito extra), asumo que es el Beige
-        color: const Color(0xFFFEEAC9), 
+        color: const Color(0xFFD2DCB6), 
         borderRadius: const BorderRadius.only(
           topLeft: Radius.circular(30),
           topRight: Radius.circular(30),

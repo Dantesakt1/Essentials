@@ -100,9 +100,9 @@ class _NotasState extends State<Notas> {
       builder: (context) => StatefulBuilder(
         builder: (context, setStateDialog) {
           return AlertDialog(
-            backgroundColor: Colors.white,
+            backgroundColor: Color(0xFFD2DCB6),
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-            title: Text("Nota para $nombrePareja", style: const TextStyle(color: Color(0xFF5A3E3E), fontWeight: FontWeight.bold)),
+            title: Text("Nota para $nombrePareja", style: const TextStyle(color: Color(0xFF778873), fontWeight: FontWeight.bold)),
             content: Column(
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -111,13 +111,13 @@ class _NotasState extends State<Notas> {
                   controller: _mensajeController,
                   maxLines: 3,
                   decoration: InputDecoration(
-                    hintText: "Escribe algo bonito...", hintStyle: TextStyle(color: Colors.grey[400]),
+                    hintText: "(ദ്ദി◝ ⩊ ◜)...", hintStyle: TextStyle(color: Colors.grey[400]),
                     filled: true, fillColor: const Color(0xFFFAFAFA),
                     border: OutlineInputBorder(borderRadius: BorderRadius.circular(15), borderSide: BorderSide.none),
                   ),
                 ),
                 const SizedBox(height: 15),
-                const Text("Color de la notita:", style: TextStyle(fontSize: 12, color: Colors.grey)),
+                const Text("Color:", style: TextStyle(fontSize: 12, color: Color.fromARGB(255, 120, 120, 120))),
                 const SizedBox(height: 10),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -129,7 +129,7 @@ class _NotasState extends State<Notas> {
                         width: 30, height: 30,
                         decoration: BoxDecoration(
                           color: color, shape: BoxShape.circle,
-                          border: isSelected ? Border.all(color: Colors.black54, width: 2) : null,
+                          border: isSelected ? Border.all(color: const Color.fromARGB(137, 120, 120, 120), width: 2) : null,
                         ),
                       ),
                     );
@@ -138,10 +138,10 @@ class _NotasState extends State<Notas> {
               ],
             ),
             actions: [
-              TextButton(onPressed: () => Navigator.pop(context), child: const Text("Cancelar", style: TextStyle(color: Colors.grey))),
+              TextButton(onPressed: () => Navigator.pop(context), child: const Text("Cancelar", style: TextStyle(color: Color.fromARGB(255, 120, 120, 120)))),
               ElevatedButton(
                 onPressed: _enviarNota,
-                style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFFFD7979), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10))),
+                style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFF778873), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10))),
                 child: const Text("Enviar", style: TextStyle(color: Colors.white)),
               ),
             ],
@@ -160,7 +160,7 @@ class _NotasState extends State<Notas> {
       builder: (context) => Container(
         height: MediaQuery.of(context).size.height * 0.7,
         decoration: const BoxDecoration(
-          color: Colors.white,
+          color: Color(0xFFD2DCB6),
           borderRadius: BorderRadius.vertical(top: Radius.circular(30)),
         ),
         child: Column(
@@ -168,7 +168,7 @@ class _NotasState extends State<Notas> {
             const SizedBox(height: 15),
             Container(width: 40, height: 4, decoration: BoxDecoration(color: Colors.grey[300], borderRadius: BorderRadius.circular(10))),
             const SizedBox(height: 20),
-            Text("Notas de $nombrePareja ❤️", style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Color(0xFF5A3E3E))),
+            Text("Notas de $nombrePareja ✐˚ ༘ 𓂃⊹", style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Color(0xFF778873))),
             const SizedBox(height: 10),
             Expanded(
               child: StreamBuilder(
@@ -240,7 +240,7 @@ class _NotasState extends State<Notas> {
       width: double.infinity,
       padding: const EdgeInsets.symmetric(vertical: 30, horizontal: 20),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: const Color(0xFFF1F3E0),
         borderRadius: BorderRadius.circular(30),
         boxShadow: [
           BoxShadow(color: Colors.black.withOpacity(0.1), blurRadius: 20, offset: const Offset(0, 5)),
@@ -280,7 +280,7 @@ class _NotasState extends State<Notas> {
             child: ElevatedButton(
               onPressed: _verHistorial,
               style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFFF5ECDD),
+                backgroundColor: const Color(0xFFA1BC98),
                 foregroundColor: Colors.black87,
                 elevation: 0,
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(25)),
@@ -297,7 +297,7 @@ class _NotasState extends State<Notas> {
             child: Container(
               width: 50, height: 50,
               decoration: const BoxDecoration(
-                color: Color(0xFFF5ECDD),
+                color: Color(0xFF778873),
                 shape: BoxShape.circle,
               ),
               child: const Icon(Icons.add, color: Colors.white, size: 30),

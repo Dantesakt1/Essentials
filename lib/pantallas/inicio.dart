@@ -109,10 +109,10 @@ class _InicioState extends State<Inicio> {
     );
   }
 
-  // --- BARRA NORMAL (FRUTILLA) ---
+  // --- BARRA NORMAL ---
   PreferredSizeWidget _barraNormal() {
     return AppBar(
-      backgroundColor: const Color(0xFFFEEAC9),
+      backgroundColor: const Color(0xFFD2DCB6),
       elevation: 0,
       scrolledUnderElevation: 0,
       surfaceTintColor: Colors.transparent,
@@ -126,14 +126,14 @@ class _InicioState extends State<Inicio> {
       ),
       leadingWidth: 80,
       leading: Container(
-        margin: const EdgeInsets.all(10),
+        margin: const EdgeInsets.all(15),
         alignment: Alignment.center,
         width: 40,
         decoration: BoxDecoration(
-          color: const Color(0xffffeac9),
+          color: const Color(0xFFD2DCB6),
           borderRadius: BorderRadius.circular(10),
         ),
-        child: Image.asset('assets/images/frutilla.png', height: 150, width: 150),
+        child: Image.asset('assets/images/gato-icon.png', height: 150, width: 150),
       ),
       actions: [
         GestureDetector(
@@ -147,21 +147,24 @@ class _InicioState extends State<Inicio> {
             margin: const EdgeInsets.all(10),
             alignment: Alignment.center,
             decoration: BoxDecoration(
-              color: const Color.fromARGB(255, 255, 255, 255),
+              color: const Color.fromARGB(255, 241, 241, 241),
               shape: BoxShape.circle,
-              border: Border.all(color: const Color(0xffFD7979), width: 2)
             ),
-            child: Image.asset('assets/images/manzana-icon.png', height: 40, width: 40),
+            child: 
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child:
+                  Image.asset('assets/images/heart-icon.png', height: 30, width: 30, fit: BoxFit.contain),
           ),
         )
-      ],
+      )],
     );
   }
 
   // --- BARRA CHAT (NOMBRE PAREJA) ---
 PreferredSizeWidget _barraChat() {
     return AppBar(
-      backgroundColor: const Color(0xFFFEEAC9),
+      backgroundColor: const Color(0xFFD2DCB6),
       elevation: 0,
       scrolledUnderElevation: 0,
       surfaceTintColor: Colors.transparent,

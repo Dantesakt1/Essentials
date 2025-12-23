@@ -86,7 +86,7 @@ class _PantallaPerfilState extends State<PantallaPerfil> {
           subiendoFoto = false;
         });
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text("¡Foto actualizada! 📸")),
+          const SnackBar(content: Text("Foto actualizada")),
         );
       }
 
@@ -112,7 +112,7 @@ class _PantallaPerfilState extends State<PantallaPerfil> {
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text("Perfil actualizado ✅")),
+          const SnackBar(content: Text("Perfil actualizado")),
         );
       }
     } catch (e) {
@@ -133,7 +133,7 @@ class _PantallaPerfilState extends State<PantallaPerfil> {
             Container(
               height: 180,
               decoration: const BoxDecoration(
-                color: Color(0xFFFEEAC9),
+                color: Color(0xFFD2DCB6),
                 borderRadius: BorderRadius.only(
                   bottomLeft: Radius.circular(30),
                   bottomRight: Radius.circular(30),
@@ -148,7 +148,7 @@ class _PantallaPerfilState extends State<PantallaPerfil> {
                         alignment: Alignment.topLeft,
                         child: Padding(
                           padding: const EdgeInsets.only(top: 10),
-                          child: Image.asset('assets/images/frutilla.png', width: 70),
+                          child: Image.asset('assets/images/gato-icon.png', width: 70),
                         ),
                       ),
                       Align(
@@ -161,9 +161,8 @@ class _PantallaPerfilState extends State<PantallaPerfil> {
                             decoration: BoxDecoration(
                               color: Colors.white,
                               shape: BoxShape.circle,
-                              border: Border.all(color: const Color(0xFFFF6B6B), width: 1.5),
                             ),
-                            child: const Icon(Icons.arrow_back_ios_new, color: Color(0xFFFF6B6B), size: 20),
+                            child: const Icon(Icons.arrow_back_ios_new, color: Color(0xFFA1BC98), size: 20),
                           ),
                         ),
                       ),
@@ -208,7 +207,7 @@ class _PantallaPerfilState extends State<PantallaPerfil> {
                           child: Container(
                             padding: const EdgeInsets.all(8),
                             decoration: const BoxDecoration(
-                              color: Color(0xFFFF6B6B),
+                              color: Color(0xFF778873),
                               shape: BoxShape.circle,
                             ),
                             child: subiendoFoto 
@@ -272,18 +271,20 @@ class _PantallaPerfilState extends State<PantallaPerfil> {
                         
                         const SizedBox(height: 30),
 
-                        SizedBox(
-                          width: double.infinity,
-                          height: 50,
-                          child: ElevatedButton(
-                            onPressed: _guardarCambios,
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: const Color(0xFFFF6B6B),
-                              foregroundColor: Colors.white,
-                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                        Center(
+                          child: SizedBox(
+                            height: 50,
+                            width: 200,
+                            child: ElevatedButton(
+                              onPressed: _guardarCambios,
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: const Color(0xFFA1BC98),
+                                foregroundColor: Colors.white,
+                                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                              ),
+                              child: const Text("Guardar cambios"),
                             ),
-                            child: const Text("Guardar Cambios"),
-                          ),
+                          )
                         )
                       ],
                     ),

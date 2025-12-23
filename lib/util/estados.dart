@@ -77,7 +77,7 @@ class _EstadosState extends State<Estados> {
       });
       await _obtenerMiEstado();
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("¡Estado actualizado! ✨"), backgroundColor: Color(0xFFFF6B6B), duration: Duration(seconds: 1)),
+        const SnackBar(content: Text("Actualizaste como te sientes"), backgroundColor: Color(0xFFA1BC98), duration: Duration(seconds: 1)),
       );
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Error al enviar")));
@@ -96,7 +96,7 @@ class _EstadosState extends State<Estados> {
         decoration: BoxDecoration(
           shape: BoxShape.circle,
           border: Border.all(
-            color: isSelected ? const Color(0xFFFF6B6B) : Colors.grey.shade200, 
+            color: isSelected ? const Color(0xFFA1BC98) : Colors.grey.shade200, 
             width: isSelected ? 2 : 1
           ),
           image: DecorationImage(
@@ -147,7 +147,7 @@ class _EstadosState extends State<Estados> {
       child: Container(
         padding: const EdgeInsets.symmetric(vertical: 25, horizontal: 20),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: const Color(0xFFF1F3E0),
           borderRadius: BorderRadius.circular(30),
           boxShadow: [
             BoxShadow(
@@ -196,7 +196,7 @@ class _EstadosState extends State<Estados> {
                     children: [
                       Text(
                         emocionSeleccionada?.toUpperCase() ?? "...", 
-                        style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: Color(0xFF5A3E3E)),
+                        style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: Color.fromARGB(255, 72, 84, 69)),
                         textAlign: TextAlign.center,
                         maxLines: 2, 
                         overflow: TextOverflow.ellipsis,
@@ -210,10 +210,10 @@ class _EstadosState extends State<Estados> {
                           child: Container(
                             height: 45, width: 45,
                             decoration: BoxDecoration(
-                              color: const Color(0xFFFF6B6B), 
+                              color: const Color(0xFF778873), 
                               shape: BoxShape.circle,
                               boxShadow: [
-                                BoxShadow(color: const Color(0xFFFF6B6B).withOpacity(0.4), blurRadius: 6, offset: const Offset(0,2))
+                                BoxShadow(color: const Color(0xFF778873).withOpacity(0.4), blurRadius: 6, offset: const Offset(0,2))
                               ]
                             ),
                             child: enviando 

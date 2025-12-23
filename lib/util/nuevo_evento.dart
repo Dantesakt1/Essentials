@@ -1,13 +1,18 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/cupertino.dart';
+import 'package:flutter/cupertino.dart'; // Solo para el selector de hora (ruleta)
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:intl/intl.dart';
 import 'package:intl/date_symbol_data_local.dart';
 
 class NuevoEvento extends StatefulWidget {
   final DateTime fechaSeleccionada;
+  final Map<String, dynamic>? eventoParaEditar;
 
-  const NuevoEvento({super.key, required this.fechaSeleccionada});
+  const NuevoEvento({
+    super.key, 
+    required this.fechaSeleccionada,
+    this.eventoParaEditar,
+  });
 
   @override
   State<NuevoEvento> createState() => _NuevoEventoState();
@@ -22,28 +27,42 @@ class _NuevoEventoState extends State<NuevoEvento> {
   bool _cargando = false;
 
   // TU PALETA DE COLORES
-  final Color colorFondo = const Color(0xFFFFFBF4);      // Crema Fondo
-  final Color colorBorde = const Color(0xFFFEEAC9);      // Beige Borde
-  final Color colorAcento = const Color(0xFFFD7979);     // Rojo Manzana
-  final Color colorIconoFondo = const Color(0xFFFFF0F0); // Rojo muy clarito
-  final Color colorTexto = const Color(0xFF5A3E3E);      // Marrón oscuro
+  final Color colorFondo = const Color.fromARGB(206, 236, 247, 223);
+  final Color colorBorde = const Color(0xFFA1BC98);     
+  final Color colorAcento = const Color(0xFF778873);     
+  final Color colorIconoFondo = const Color(0xFFF1F3E0);
+  final Color colorTexto = const Color.fromARGB(255, 99, 114, 95);
 
   @override
   void initState() {
     super.initState();
     initializeDateFormatting('es_ES', null);
+
+    // RELLENAR CAMPOS SI ES EDICIÓN
+    if (widget.eventoParaEditar != null) {
+      final e = widget.eventoParaEditar!;
+      _tituloController.text = e['title'] ?? '';
+      _descripcionController.text = e['description'] ?? '';
+      _categoriaController.text = e['category'] ?? '';
+      
+      if (e['start_time'] != null) {
+        _horaSeleccionada = DateTime.parse(e['start_time']); 
+      }
+    }
   }
 
   Future<void> _guardarEvento() async {
     if (_tituloController.text.trim().isEmpty) {
-      showCupertinoDialog(
+      // ALERTA ESTÁNDAR (NO IPHONE)
+      showDialog(
         context: context,
-        builder: (context) => CupertinoAlertDialog(
+        builder: (context) => AlertDialog(
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
           title: const Text("¡Falta el título!"),
           content: const Text("Escribe qué vamos a hacer para poder guardar."),
           actions: [
-            CupertinoDialogAction(
-              child: const Text("OK"),
+            TextButton(
+              child: const Text("OK", style: TextStyle(color: Colors.black)),
               onPressed: () => Navigator.pop(context),
             )
           ],
@@ -56,6 +75,7 @@ class _NuevoEventoState extends State<NuevoEvento> {
 
     try {
       final myId = Supabase.instance.client.auth.currentUser?.id;
+      
       final fechaFinal = DateTime(
         widget.fechaSeleccionada.year,
         widget.fechaSeleccionada.month,
@@ -64,13 +84,24 @@ class _NuevoEventoState extends State<NuevoEvento> {
         _horaSeleccionada.minute,
       );
 
-      await Supabase.instance.client.from('events').insert({
+      final datos = {
         'title': _tituloController.text.trim(),
         'description': _descripcionController.text.trim(),
         'start_time': fechaFinal.toIso8601String(),
         'category': _categoriaController.text.trim().isEmpty ? 'General' : _categoriaController.text.trim(),
         'created_by': myId,
-      });
+      };
+
+      if (widget.eventoParaEditar != null) {
+        await Supabase.instance.client
+            .from('events')
+            .update(datos)
+            .eq('id', widget.eventoParaEditar!['id']);
+      } else {
+        await Supabase.instance.client
+            .from('events')
+            .insert(datos);
+      }
 
       if (mounted) Navigator.pop(context, true);
     } catch (e) {
@@ -93,8 +124,9 @@ class _NuevoEventoState extends State<NuevoEvento> {
           children: [
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+              // Aquí dejé el borde sutil solo para separar el botón "Listo" de la rueda
               decoration: BoxDecoration(
-                border: Border(bottom: BorderSide(color: colorBorde)),
+                border: Border(bottom: BorderSide(color: colorBorde.withOpacity(0.3))),
               ),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.end,
@@ -125,6 +157,7 @@ class _NuevoEventoState extends State<NuevoEvento> {
   @override
   Widget build(BuildContext context) {
     final fechaString = DateFormat('EEEE, d MMMM', 'es_ES').format(widget.fechaSeleccionada);
+    final esEdicion = widget.eventoParaEditar != null;
 
     return Scaffold(
       backgroundColor: colorFondo,
@@ -133,14 +166,13 @@ class _NuevoEventoState extends State<NuevoEvento> {
         backgroundColor: colorFondo,
         elevation: 0,
         centerTitle: true,
-        automaticallyImplyLeading: false, // Quitamos la flecha automática
+        automaticallyImplyLeading: false, 
         title: Text(
-          "Nuevo Plan", 
+          esEdicion ? "Editar plan" : "Nuevo plan", 
           style: TextStyle(color: colorTexto, fontWeight: FontWeight.bold, fontSize: 18)
         ),
       ),
       
-      // Usamos Column para separar el contenido scrolleable de los botones fijos abajo
       body: SafeArea(
         child: Column(
           children: [
@@ -281,42 +313,38 @@ class _NuevoEventoState extends State<NuevoEvento> {
               ),
             ),
 
-            // --- BOTONES INFERIORES ---
+            // --- BOTONES INFERIORES ARREGLADOS ---
             Container(
               padding: const EdgeInsets.all(20),
-              decoration: BoxDecoration(
-                color: colorFondo,
-                border: Border(top: BorderSide(color: colorBorde, width: 2)), // Línea divisoria suave
-              ),
+              color: colorFondo, // Mismo fondo, SIN BORDE/LÍNEA
               child: Row(
                 children: [
-                  // Botón Cancelar
+                  // Botón Cancelar (Blanco, Texto normal)
                   Expanded(
-                    child: CupertinoButton(
-                      padding: const EdgeInsets.symmetric(vertical: 16),
-                      color: CupertinoColors.systemGrey5, // Un gris suave para el botón secundario
-                      borderRadius: BorderRadius.circular(15),
-                      onPressed: () => Navigator.pop(context),
-                      child: const Text(
-                        "Cancelar", 
-                        style: TextStyle(color: Colors.black54, fontWeight: FontWeight.bold, fontSize: 16)
+                    child: TextButton(
+                      style: TextButton.styleFrom(
+                        backgroundColor: Colors.white,
+                        padding: const EdgeInsets.symmetric(vertical: 16),
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
                       ),
+                      onPressed: () => Navigator.pop(context),
+                      child: Text("Cancelar", style: TextStyle(color: colorTexto, fontWeight: FontWeight.bold, fontSize: 16)),
                     ),
                   ),
                   const SizedBox(width: 15),
-                  // Botón Guardar
+                  // Botón Guardar (Color Acento, Texto Blanco)
                   Expanded(
-                    child: CupertinoButton(
-                      padding: const EdgeInsets.symmetric(vertical: 16),
-                      color: colorAcento, // Tu rojo manzana
-                      borderRadius: BorderRadius.circular(15),
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: colorAcento,
+                        elevation: 0, // Sin sombra para que sea plano y limpio
+                        padding: const EdgeInsets.symmetric(vertical: 16),
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+                      ),
                       onPressed: _cargando ? null : _guardarEvento,
                       child: _cargando
-                        ? const CupertinoActivityIndicator(color: Colors.white)
-                        : const Text(
-                            "Guardar", 
-                            style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16)
-                          ),
+                        ? const SizedBox(height: 20, width: 20, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
+                        : const Text("Guardar", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16)),
                     ),
                   ),
                 ],
@@ -419,7 +447,7 @@ class _CustomListTile extends StatelessWidget {
                   style: TextStyle(
                     fontSize: 16, 
                     color: isAction ? colorAction : colorTexto.withOpacity(0.6),
-                    fontWeight: isAction ? FontWeight.bold : FontWeight.normal,
+                    fontWeight: isAction ? FontWeight.normal : FontWeight.normal,
                   ),
                 ),
               ),
